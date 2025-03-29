@@ -30,6 +30,15 @@ This repository provides an example of using custom instrumentation with OpenTel
 
     Replace `YourEndpointURL` and `YourSecretKey` with your actual endpoint URL and secret key for the OpenTelemetry collector. Replace `simple-java-opentelemetry` with your image name if you chose a different name during build.
 
+3. java options
+
+   ```
+   -javaagent:opentelemetry-javaagent.jar
+   -Dotel.service.name=simple-main
+   -Dotel.javaagent.extensions=opentelemetry-custom-instrumentation-1.0-SNAPSHOT.jar
+   -Dotel.javaagent.debug=false
+   ```
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
