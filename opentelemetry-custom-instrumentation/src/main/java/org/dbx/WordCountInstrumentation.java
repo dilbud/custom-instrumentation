@@ -10,6 +10,7 @@ package org.dbx;
 
 // OpenTelemetry libraries for tracing capabilities
 import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
@@ -27,6 +28,11 @@ import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 
 // Java logging library
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
@@ -111,7 +117,12 @@ public class WordCountInstrumentation implements TypeInstrumentation {
 
             // If an exception was thrown during the method's execution, set the span's status to ERROR.
             if (throwable != null) {
-                span.setStatus(StatusCode.ERROR, "Exception thrown in method");
+                System.out.println("Exiting method: " + Arrays.toString(throwable.getStackTrace()));
+                span.setStatus(StatusCode.ERROR, throwable.getMessage());
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                throwable.printStackTrace(new PrintStream(os, true, StandardCharsets.UTF_8));
+
+                span.setAttribute(AttributeKey.stringKey("stackTrace"), os.toString(StandardCharsets.UTF_8));
             } else {
                 // If no exception was thrown, set a custom attribute "wordCount" on the span.
             }

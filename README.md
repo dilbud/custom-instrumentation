@@ -47,3 +47,14 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 [Apache 2.0](https://choosealicense.com/licenses/apache-2.0/)
 
+
+## flags
+
+-javaagent:D:\PROJECTS\learning\spring\camel-test\agent\opentelemetry-javaagent.jar
+-Dotel.service.name=simple-main
+-Dotel.javaagent.extensions=D:\PROJECTS\learning\custom-instrumentation\opentelemetry-custom-instrumentation\target\opentelemetry-custom-instrumentation-1.0-SNAPSHOT.jar
+-Dotel.javaagent.debug=true
+-Dotel.metrics.exporter=none
+-Dotel.logs.exporter=none
+-Dotel.instrumentation.common.db-statement-sanitizer.enabled=false
+

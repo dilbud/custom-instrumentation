@@ -49,6 +49,7 @@ public class Main {
 //            System.out.println("The input contains " + wordCount + " word(s).");
 //        }
 
+        JtdsSelectExample.execute();
         scan();
     }
 
