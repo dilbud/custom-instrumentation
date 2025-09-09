@@ -1,9 +1,11 @@
 package org.dbx;
+
 import java.util.Scanner;
 import java.util.logging.Logger;
+import java.util.stream.IntStream;
 
 public class Main {
-    private static Logger logger = Logger.getLogger(Main.class.getName());
+    private static final Logger logger = Logger.getLogger(Main.class.getName());
 
 //    private static Instrumentation instrumentation;
 //
@@ -22,21 +24,48 @@ public class Main {
 //        }
 //    }
 
-    public static void main(String[] args) {
-
-        Scanner scanner = new Scanner(System.in);
-        while (true) {
-            System.out.println("Please enter your sentence:");
-            String input = scanner.nextLine();
-            if("exit".equals(input)) {
-                break;
+    public static void main(String[] args) throws InterruptedException {
+        Main main = new Main();
+        IntStream.range(0, 5).forEach(i -> {
+            try {
+                main.recursiveCall1(i);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
-            Main main = new Main();
-            main.call1();
-            int wordCount = main.countWords(input);
-            main.call2();
-            System.out.println("The input contains " + wordCount + " word(s).");
-        }
+        });
+
+
+//        Scanner scanner = new Scanner(System.in);
+//        while (true) {
+//            System.out.println("Please enter your sentence:");
+//            String input = scanner.nextLine();
+//            if("exit".equals(input)) {
+//                break;
+//            }
+//            Main main = new Main();
+//            main.call1();
+//            int wordCount = main.countWords(input);
+//            main.call2();
+//            System.out.println("The input contains " + wordCount + " word(s).");
+//        }
+
+        scan();
+    }
+
+    private static void scan() {
+        Scanner scanner = new Scanner(System.in);
+        String input = scanner.nextLine();
+    }
+
+
+    public void recursiveCall1(int num) throws InterruptedException {
+        logger.info("recursiveCall1 " + num);
+        Thread.sleep(1);
+//        if (num == 1500) {
+//            logger.info("recursiveCall1 end");
+//            return;
+//        }
+//        recursiveCall1(++num);
     }
 
     public void call1() {

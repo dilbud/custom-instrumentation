@@ -27,7 +27,9 @@ import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 
 // Java logging library
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 // The WordCountInstrumentation class implements the TypeInstrumentation interface.
@@ -45,7 +47,7 @@ public class WordCountInstrumentation implements TypeInstrumentation {
             if(Objects.isNull(a) || Objects.isNull(a.getCanonicalName())) {
                 return false;
             }
-            return a.getCanonicalName().contains("org.dbx");
+            return a.getCanonicalName().contains("org.dbx.Main");
         };
     }
 
@@ -64,13 +66,19 @@ public class WordCountInstrumentation implements TypeInstrumentation {
         // It creates and starts a new span, and makes it active.
         @Advice.OnMethodEnter(suppress = Throwable.class)
         public static Scope onEnter(@Advice.Local("otelSpan") Span span,
-                                    @Advice.Origin Class<?> clazz,
+                                    @Advice.AllArguments Object[] args,
+                                    @Advice.Origin("#t") Class<?> clazz,
                                     @Advice.Origin("#m") String methodName) {
             // Get a Tracer instance from OpenTelemetry.
             Tracer tracer = GlobalOpenTelemetry.getTracer("instrumentation-library-name","semver:1.0.0");
-            String className = clazz.getCanonicalName();
+            System.out.println("class name: " + clazz.getName());
+            String className = clazz.getCanonicalName() != null && !clazz.getCanonicalName().isEmpty() ? clazz.getCanonicalName() : clazz.getName();
             String fullMethodName = className + "." + methodName;
             System.out.println("Entering method: " + fullMethodName);
+
+            String argsString = Arrays.toString(args).replace("[", "").replace("]", "");
+
+            System.out.println("Arguments: " + argsString);
 
             // Get the current active span (parent span).
             Span parentSpan = Span.current();
@@ -78,6 +86,7 @@ public class WordCountInstrumentation implements TypeInstrumentation {
             // Start a new child span from the parent span.
             span = tracer.spanBuilder(fullMethodName)
                     .setParent(Context.current().with(parentSpan))
+                    .setAttribute("Arguments", argsString)
                     .startSpan();
 
             // Start a new span with the name "mySpan".
