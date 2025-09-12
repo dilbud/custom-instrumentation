@@ -1,5 +1,7 @@
 package org.dbx;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
@@ -49,8 +51,18 @@ public class Main {
 //            System.out.println("The input contains " + wordCount + " word(s).");
 //        }
 
+        myRt();
+        myRtf();
         JtdsSelectExample.execute();
         scan();
+    }
+
+    public static String myRt() {
+        return "gggggggggggggggggg";
+    }
+
+    public static List<String> myRtf() {
+        return Collections.singletonList("gggggggggggggggggg");
     }
 
     private static void scan() {

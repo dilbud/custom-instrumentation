@@ -25,15 +25,18 @@ import io.opentelemetry.javaagent.extension.instrumentation.TypeTransformer;
 import net.bytebuddy.asm.Advice;
         import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
+import net.bytebuddy.implementation.bytecode.assign.Assigner;
 import net.bytebuddy.matcher.ElementMatcher;
 
 // Java logging library
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -110,6 +113,8 @@ public class WordCountInstrumentation implements TypeInstrumentation {
         // If no exception was thrown, it sets a custom attribute "wordCount" on the span, and ends the span.
         @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
         public static void onExit(@Advice.Thrown Throwable throwable,
+                                  @Advice.Return(typing = Assigner.Typing.DYNAMIC) Object returnValue,
+                                  @Advice.Origin Method method,
                                   @Advice.Local("otelSpan") Span span,
                                   @Advice.Enter Scope scope) {
             // Close the scope to end it.
@@ -125,6 +130,17 @@ public class WordCountInstrumentation implements TypeInstrumentation {
                 span.setAttribute(AttributeKey.stringKey("stackTrace"), os.toString(StandardCharsets.UTF_8));
             } else {
                 // If no exception was thrown, set a custom attribute "wordCount" on the span.
+                span.setAttribute(AttributeKey.stringKey("returnType"), method.getReturnType().getTypeName());
+                if (List.class.equals(method.getReturnType())) {
+                    System.out.println("This method returns a List.");
+                }
+                if (Void.TYPE.equals(method.getReturnType())) {
+                    System.out.println("This method returns Void.");
+                }
+                if(returnValue != null) {
+                    System.out.println(returnValue);
+                    span.setAttribute(AttributeKey.stringKey("returnValue"), returnValue.toString());
+                }
             }
 
             // End the span. This makes it ready to be exported to the configured exporter (e.g., Jaeger, Zipkin).
